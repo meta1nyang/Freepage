@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Freepage 에디터</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@400;600;700&family=Gaegu:wght@400;700&family=Black+Han+Sans&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/editor.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="logo">FREEPAGE</span>
+      <input id="titleInput" class="title-input" type="text" placeholder="제목 없는 페이지" maxlength="100">
+    </div>
+    <div class="topbar-right">
+      <span id="saveStatus" class="save-status"></span>
+      <button id="btnPreview" class="btn btn-ghost">미리보기</button>
+      <button id="btnPublish" class="btn btn-primary">공유하기</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <aside class="toolbox">
+      <h2 class="panel-title">요소 추가</h2>
+      <button id="btnAddText" class="tool-btn">
+        <span class="tool-icon">Aa</span>텍스트 추가
+      </button>
+      <button id="btnAddImage" class="tool-btn">
+        <span class="tool-icon">▧</span>이미지 추가
+      </button>
+      <button id="btnBackground" class="tool-btn">
+        <span class="tool-icon">▦</span>배경 설정
+      </button>
+      <button id="btnRawCss" class="tool-btn">
+        <span class="tool-icon">{ }</span>Raw CSS
+      </button>
+
+      <h2 class="panel-title panel-title-spaced">캔버스</h2>
+      <button id="btnGrowCanvas" class="tool-btn tool-btn-secondary">+ 페이지 길이 늘리기</button>
+      <div class="canvas-meta"><span id="canvasSizeLabel" class="mono"></span></div>
+
+      <h2 class="panel-title panel-title-spaced">내 페이지</h2>
+      <div id="myPagesList" class="my-pages-list">
+        <p class="empty-hint">아직 공유한 페이지가 없어요.</p>
+      </div>
+    </aside>
+
+    <main class="canvas-area" id="canvasArea">
+      <div class="canvas-mat">
+        <div class="snap-line-v" id="snapLineV"></div>
+        <div id="pageCanvas" class="page-canvas">
+          <div class="canvas-empty-hint" id="canvasEmptyHint">
+            왼쪽에서 요소를 추가해<br>나만의 페이지를 꾸며보세요
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <aside class="properties" id="propertiesPanel">
+      <div class="properties-empty" id="propertiesEmpty">요소를 선택하면<br>여기서 스타일을 바꿀 수 있어요</div>
+    </aside>
+  </div>
+
+  <!-- 모달들 -->
+  <div id="modalBackdrop" class="modal-backdrop hidden"></div>
+
+  <div id="imageModal" class="modal hidden">
+    <h3>이미지 추가</h3>
+    <label class="field-label">이미지 URL</label>
+    <input id="imageUrlInput" type="text" placeholder="https://...">
+    <div class="divider-text">또는</div>
+    <label class="field-label">파일 업로드</label>
+    <input id="imageFileInput" type="file" accept="image/*">
+    <div class="modal-actions">
+      <button id="imageModalCancel" class="btn btn-ghost">취소</button>
+      <button id="imageModalConfirm" class="btn btn-primary">추가</button>
+    </div>
+  </div>
+
+  <div id="backgroundModal" class="modal hidden">
+    <h3>배경 설정</h3>
+    <div class="seg-control" id="bgTypeSeg">
+      <button type="button" data-bg-type="color" class="seg-btn active">색상</button>
+      <button type="button" data-bg-type="image" class="seg-btn">이미지</button>
+    </div>
+    <div id="bgColorFields" class="modal-section">
+      <label class="field-label">배경 색상</label>
+      <input id="bgColorInput" type="color" value="#ffffff">
+    </div>
+    <div id="bgImageFields" class="modal-section hidden">
+      <label class="field-label">이미지 URL</label>
+      <input id="bgImageUrlInput" type="text" placeholder="https://...">
+      <div class="divider-text">또는</div>
+      <label class="field-label">파일 업로드</label>
+      <input id="bgImageFileInput" type="file" accept="image/*">
+      <label class="field-label">채우기 방식</label>
+      <select id="bgFitSelect">
+        <option value="cover">꽉 채우기 (cover)</option>
+        <option value="contain">전체 보이기 (contain)</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button id="bgModalCancel" class="btn btn-ghost">취소</button>
+      <button id="bgModalConfirm" class="btn btn-primary">적용</button>
+    </div>
+  </div>
+
+  <div id="cssModal" class="modal modal-wide hidden">
+    <h3>Raw CSS</h3>
+    <p class="modal-hint">
+      직접 CSS를 작성해서 페이지를 더 세밀하게 꾸밀 수 있어요.
+      모든 요소는 <code>.pf-el</code>, 텍스트 상자는 <code>.pf-textbox</code>, 이미지는 <code>.pf-image</code> 클래스를 가져요.
+      요소별 속성 패널에서 <b>CSS 클래스</b>를 지정하면 위치 상자(<code>.pf-el</code>)와 안쪽 박스 양쪽에
+      그 클래스가 붙어서, <code>.내클래스</code>로 바로 선택하거나 <code>.pf-textbox.내클래스</code>처럼 더 좁혀서 선택할 수 있어요.
+      실제 적용된 모습은 <b>미리보기</b> 버튼으로 확인하세요.
+    </p>
+    <textarea id="cssTextarea" class="css-textarea" spellcheck="false" placeholder=".pf-el { }"></textarea>
+    <div class="modal-actions">
+      <button id="cssModalCancel" class="btn btn-ghost">취소</button>
+      <button id="cssModalConfirm" class="btn btn-primary">적용</button>
+    </div>
+  </div>
+
+  <div id="previewModal" class="modal-preview hidden">
+    <div class="preview-header">
+      <span>미리보기</span>
+      <button id="previewClose" class="btn btn-ghost">닫기</button>
+    </div>
+    <iframe id="previewFrame" class="preview-frame" title="미리보기"></iframe>
+  </div>
+
+  <div id="publishModal" class="modal hidden">
+    <h3>페이지가 공개됐어요 🎉</h3>
+    <label class="field-label">공유 링크 (누구나 볼 수 있어요)</label>
+    <div class="copy-row">
+      <input id="shareLinkInput" type="text" readonly>
+      <button id="copyShareBtn" class="btn btn-ghost">복사</button>
+    </div>
+    <label class="field-label warn-label">편집 링크 (나만 보관하세요!)</label>
+    <div class="copy-row">
+      <input id="editLinkInput" type="text" readonly>
+      <button id="copyEditBtn" class="btn btn-ghost">복사</button>
+    </div>
+    <p class="modal-hint">이 편집 링크가 있으면 누구나 페이지를 수정할 수 있어요. 즐겨찾기 등에 안전하게 보관해주세요.</p>
+    <div class="modal-actions">
+      <button id="publishModalClose" class="btn btn-primary">확인</button>
+    </div>
+  </div>
+
+  <script src="js/render.js"></script>
+  <script src="js/editor.js"></script>
+</body>
+</html>
