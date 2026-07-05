@@ -1,0 +1,12 @@
+{
+  "name": "freepage",
+  "version": "1.0.0",
+  "private": true,
+  "description": "드래그 앤 드롭으로 나만의 한 장짜리 페이지를 꾸미고 짧은 링크로 공유하는 도구",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vercel dev"
+  }
+}
