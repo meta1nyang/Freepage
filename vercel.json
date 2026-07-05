@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/p/:id", "destination": "/view.html" },
+    { "source": "/edit/:id", "destination": "/editor.html" }
+  ]
+}
