@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Freepage — 나만의 페이지 만들기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mat-green: #46594C;
+    --paper: #F7F4EC;
+    --accent-mark: #C6401F;
+    --grid-line: rgba(230, 221, 195, 0.09);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif;
+    background:
+      repeating-linear-gradient(0deg, var(--grid-line) 0, var(--grid-line) 1px, transparent 1px, transparent 24px),
+      repeating-linear-gradient(90deg, var(--grid-line) 0, var(--grid-line) 1px, transparent 1px, transparent 24px),
+      var(--mat-green);
+    color: var(--paper);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .hero { max-width: 480px; text-align: center; }
+  .logo {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: 0.16em;
+    font-size: 13px; color: rgba(247,244,236,0.6); margin-bottom: 18px;
+  }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-size: 34px; line-height: 1.35; margin: 0 0 14px; }
+  p { font-size: 14.5px; line-height: 1.7; color: rgba(247,244,236,0.75); margin: 0 0 28px; }
+  .btn-start {
+    display: inline-block; background: var(--accent-mark); color: #fff; text-decoration: none;
+    font-weight: 700; font-size: 15px; padding: 14px 30px; border-radius: 8px;
+    transition: filter 0.15s, transform 0.1s;
+  }
+  .btn-start:hover { filter: brightness(1.08); }
+  .btn-start:active { transform: scale(0.97); }
+  .mark { margin-top: 40px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(247,244,236,0.4); }
+</style>
+</head>
+<body>
+  <div class="hero">
+    <div class="logo">FREEPAGE</div>
+    <h1>배경도, 이미지도,<br>텍스트와 링크도<br>내 마음대로.</h1>
+    <p>드래그해서 배치하는 나만의 한 장짜리 페이지를 만들고,<br>짧은 링크 하나로 공유해보세요.</p>
+    <a href="editor.html" class="btn-start">새 페이지 만들기 →</a>
+    <div class="mark">HTML · CSS · JS · Vercel</div>
+  </div>
+</body>
+</html>
